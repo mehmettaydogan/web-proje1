@@ -23,6 +23,8 @@ Gear Runner, oyuncunun bir robotu kontrol ederek tehlikeli bir fabrikada hayatta
 
 
 
+
+
 <img width="1590" height="755" alt="Ekran görüntüsü 2026-05-12 230320" src="https://github.com/user-attachments/assets/170539f9-a8cd-402e-8e40-fe512948326a" />
 
 ### 🎯 Öne Çıkan Özellikler
