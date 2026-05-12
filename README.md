@@ -17,6 +17,8 @@ Gear Runner, oyuncunun bir robotu kontrol ederek tehlikeli bir fabrikada hayatta
 
 **oyun içi görüntüler**:
 <img width="1590" height="755" alt="Ekran görüntüsü 2026-05-12 230320" src="https://github.com/user-attachments/assets/170539f9-a8cd-402e-8e40-fe512948326a" />
+
+
 <img width="1685" height="800" alt="Ekran görüntüsü 2026-05-12 230238" src="https://github.com/user-attachments/assets/46892391-ebec-489a-b62d-0f89ed7b8012" />
 
 
