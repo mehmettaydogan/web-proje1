@@ -68,7 +68,7 @@ Bu projenin temel zıplama ve sonsuz koşu (endless runner) mekanikleri, itch.io
 
 Bu proje, aşağıdaki ekip üyelerinin ortak katkılarıyla geliştirilmiştir:
 
-* **Mehmet Aydoğan** — [Örn: Proje ve Repo Yönetimi, Çarpışma Testleri]
+* **Mehmet Aydoğan**
 * **Kerem Ulaş Demir**
 * **[Adı Soyadı]**
 * **[Adı Soyadı]** 
