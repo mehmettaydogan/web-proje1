@@ -62,3 +62,13 @@ Bu projenin temel zıplama ve sonsuz koşu (endless runner) mekanikleri, itch.io
 
 
 *(Orijinal oyun referansı: https://aweczet.itch.io/endless-doge)*
+
+
+## 👥 Ekip
+
+Bu proje, aşağıdaki ekip üyelerinin ortak katkılarıyla geliştirilmiştir:
+
+* **Mehmet Aydoğan** — [Örn: Proje ve Repo Yönetimi, Çarpışma Testleri]
+* **[Adı Soyadı]**
+* **[Adı Soyadı]**
+* **[Adı Soyadı]** 
