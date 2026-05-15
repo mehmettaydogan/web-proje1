@@ -71,4 +71,4 @@ Bu proje, aşağıdaki ekip üyelerinin ortak katkılarıyla geliştirilmiştir:
 * **Mehmet Aydoğan**
 * **Kerem Ulaş Demir**
 * **Buğrahan Yıldırım**
-* **[Adı Soyadı]** 
+* **Abdallah Seyfedin Abdulgefur** 
