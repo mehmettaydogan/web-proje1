@@ -13,61 +13,29 @@ let frame = 0;
 let speed = 4;
 let animId;
 
-// ---------- Ses Üreteci (Web Audio API) ----------
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// ---------- Ses Dosyaları (HTML5 Audio) ----------
+const sesZiplama = new Audio('ziplama.mp3');
+const sesToplama = new Audio('disli.mp3');
+const sesCarpma = new Audio('carpma.mp3');
+const sesBitis = new Audio('oyunbitti.mp3');
 
 function playSound(type) {
-  try {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    if (type === 'jump') {
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(220, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
-    } else if (type === 'gear') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.1);
-      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.25);
-    } else if (type === 'hit') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(110, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(55, audioCtx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.35);
-    } else if (type === 'gameover') {
-      [440, 330, 220, 110].forEach((freq, i) => {
-        const o2 = audioCtx.createOscillator();
-        const g2 = audioCtx.createGain();
-        o2.connect(g2); g2.connect(audioCtx.destination);
-        o2.type = 'square';
-        o2.frequency.value = freq;
-        g2.gain.setValueAtTime(0.15, audioCtx.currentTime + i * 0.18);
-        g2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.18 + 0.15);
-        o2.start(audioCtx.currentTime + i * 0.18);
-        o2.stop(audioCtx.currentTime + i * 0.18 + 0.18);
-      });
-    } else if (type === 'bg') {
-      osc.type = 'square';
-      osc.frequency.value = 60;
-      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.06);
-    }
-  } catch(e) {}
+  if (type === 'jump') {
+    sesZiplama.currentTime = 0; // Hızlı tıklamalarda sesin kesilmemesi için başa sar
+    sesZiplama.play();
+  } else if (type === 'gear') {
+    sesToplama.currentTime = 0;
+    sesToplama.play();
+  } else if (type === 'hit') {
+    sesCarpma.currentTime = 0;
+    sesCarpma.play();
+  } else if (type === 'gameover') {
+    sesBitis.currentTime = 0;
+    sesBitis.play();
+  }
 }
+
+
 
 // ---------- Arka Plan Katmanları (paralaks) ----------
 const bgLayers = [
@@ -76,7 +44,7 @@ const bgLayers = [
   { x: 0, speed: 2.0, color: '#2a1800' },
 ];
 
-// Boru/fabrika dekor nesneleri
+// fabrika dekor nesneleri
 const pipes = [];
 function spawnPipe() {
   pipes.push({
@@ -144,23 +112,6 @@ function spawnGear() {
   });
 }
 
-// ---------- PARÇACIKLAR ----------
-const particles = [];
-function spawnParticles(x, y, color, count) {
-  for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const spd = 1.5 + Math.random() * 3;
-    particles.push({
-      x, y,
-      vx: Math.cos(angle) * spd,
-      vy: Math.sin(angle) * spd,
-      life: 1,
-      color,
-      r: 2 + Math.random() * 3
-    });
-  }
-}
-
 // ---------- ARKA PLAN DİŞLİLERİ (dekoratif) ----------
 const bgGears = [];
 for (let i = 0; i < 6; i++) {
@@ -182,7 +133,6 @@ window.addEventListener('keydown', e => {
     keys[e.code] = true;
     if (gameState === 'playing') {
       if ((e.code === 'Space' || e.code === 'ArrowUp') && player.jumpCount < 2) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
         player.vy = -14;
         player.jumping = true;
         player.jumpCount++;
@@ -190,7 +140,6 @@ window.addEventListener('keydown', e => {
       }
     }
     if (e.code === 'Enter') {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
       if (gameState === 'menu' || gameState === 'gameover') startGame();
     }
   }
@@ -202,7 +151,6 @@ window.addEventListener('keyup', e => {
 // Dokunmatik destek (mobil)
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
   if (gameState === 'menu' || gameState === 'gameover') { startGame(); return; }
   if (player.jumpCount < 2) {
     player.vy = -14;
@@ -252,36 +200,32 @@ function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
 }
 
 // ---------- DİŞLİ ÇİZİMİ ----------
-function drawGear(cx, cy, outerR, innerR, teeth, rot, color, alpha) {
+ function drawGear(cx, cy, outerR, innerR, teeth, rot, color, alpha) {
   ctx.save();
   ctx.globalAlpha = alpha || 1;
   ctx.translate(cx, cy);
   ctx.rotate(rot);
   ctx.fillStyle = color;
-  ctx.strokeStyle = color === '#ff8c00' ? '#ffcc66' : '#ff8c00';
-  ctx.lineWidth = 1.5;
+  
+ 
+  ctx.fillRect(-outerR, -outerR/4, outerR*2, outerR/2); // Yatay dikdörtgen
+  ctx.fillRect(-outerR/4, -outerR, outerR/2, outerR*2); // Dikey dikdörtgen
+  
+  // Ana gövde
   ctx.beginPath();
-  const step = (Math.PI * 2) / teeth;
-  for (let i = 0; i < teeth; i++) {
-    const a1 = i * step - step * 0.4;
-    const a2 = i * step - step * 0.1;
-    const a3 = i * step + step * 0.1;
-    const a4 = i * step + step * 0.4;
-    ctx.lineTo(Math.cos(a1) * innerR, Math.sin(a1) * innerR);
-    ctx.lineTo(Math.cos(a2) * outerR, Math.sin(a2) * outerR);
-    ctx.lineTo(Math.cos(a3) * outerR, Math.sin(a3) * outerR);
-    ctx.lineTo(Math.cos(a4) * innerR, Math.sin(a4) * innerR);
-  }
-  ctx.closePath();
+  ctx.arc(0, 0, outerR * 0.8, 0, Math.PI * 2);
   ctx.fill();
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(0, 0, innerR * 0.45, 0, Math.PI * 2);
+  
   ctx.fillStyle = '#0a0a0f';
+  ctx.beginPath();
+  ctx.arc(0, 0, innerR, 0, Math.PI * 2);
   ctx.fill();
-  ctx.stroke();
+  
   ctx.restore();
 }
+
+
+
 
 // ---------- ROBOT ÇİZİMİ ----------
 function drawRobot(x, y, w, h, ducking, legAnim, invincible) {
@@ -339,7 +283,8 @@ function drawRobot(x, y, w, h, ducking, legAnim, invincible) {
   }
 
   if (!ducking) {
-    const armSwing = Math.sin(legAnim * 0.25) * 8;
+    const armSwing = (Math.floor(legAnim / 5) % 2 === 0) ? 6 : -6; 
+    
     ctx.fillStyle = '#4a4a6a';
     ctx.strokeStyle = '#ff8c00';
     ctx.lineWidth = 1.5;
@@ -350,9 +295,9 @@ function drawRobot(x, y, w, h, ducking, legAnim, invincible) {
     ctx.roundRect(rx + w - 2, ry + rh * 0.3 - armSwing, 10, 22, 3);
     ctx.fill(); ctx.stroke();
   }
-
   if (!ducking) {
-    const legSwing = Math.sin(legAnim * 0.25) * 10;
+    const legSwing = (Math.floor(legAnim / 5) % 2 === 0) ? 8 : -8;
+    
     ctx.fillStyle = '#4a4a6a';
     ctx.strokeStyle = '#ff8c00';
     ctx.lineWidth = 1.5;
@@ -362,6 +307,7 @@ function drawRobot(x, y, w, h, ducking, legAnim, invincible) {
     ctx.beginPath();
     ctx.roundRect(rx + w * 0.55, ry + rh * 0.72, 12, 22 - legSwing, 3);
     ctx.fill(); ctx.stroke();
+    // Ayaklar
     ctx.fillStyle = '#ff8c00';
     ctx.beginPath();
     ctx.roundRect(rx + w * 0.1, ry + rh * 0.72 + 22 + legSwing, 18, 8, 3);
@@ -370,16 +316,9 @@ function drawRobot(x, y, w, h, ducking, legAnim, invincible) {
     ctx.roundRect(rx + w * 0.5, ry + rh * 0.72 + 22 - legSwing, 18, 8, 3);
     ctx.fill();
   } else {
-    ctx.fillStyle = '#4a4a6a';
-    ctx.strokeStyle = '#ff8c00';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.roundRect(rx + w * 0.1, ry + rh * 0.85, w * 0.8, 14, 3);
-    ctx.fill(); ctx.stroke();
   }
-}
 
-// ---------- ENGELLERİ ÇİZ ----------
+// ---------- ENGELLER ----------
 function drawObstacle(ob) {
   ctx.save();
   if (ob.type === 'gear_obstacle') {
@@ -427,7 +366,7 @@ function drawObstacle(ob) {
   ctx.restore();
 }
 
-// ---------- ZEMİN ÇİZ ----------
+// ---------- ZEMİN ----------
 function drawGround() {
   const grd = ctx.createLinearGradient(0, GROUND_Y + player.h, 0, H);
   grd.addColorStop(0, '#3a1800');
@@ -507,7 +446,6 @@ function update() {
         lives--;
         player.invincible = 90;
         playSound('hit');
-        spawnParticles(player.x + player.w / 2, player.y + player.h / 2, '#ff4444', 10);
         updateHUD();
         if (lives <= 0) {
           gameState = 'gameover';
@@ -532,7 +470,6 @@ function update() {
     if (dist < g.r + 15) {
       score += 100;
       playSound('gear');
-      spawnParticles(g.x, g.y, '#ff8c00', 6);
       gears.splice(i, 1);
       updateHUD();
       continue;
@@ -548,16 +485,6 @@ function update() {
     updateHUD();
   }
 
-  if (frame % 30 === 0 && gameState === 'playing') playSound('bg');
-
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += 0.15;
-    p.life -= 0.04;
-    if (p.life <= 0) particles.splice(i, 1);
-  }
 }
 
 // ---------- ANA ÇİZİM ----------
@@ -602,18 +529,6 @@ function draw() {
     player.legAnim,
     player.invincible
   );
-
-  particles.forEach(p => {
-    ctx.save();
-    ctx.globalAlpha = p.life;
-    ctx.fillStyle = p.color;
-    ctx.shadowColor = p.color;
-    ctx.shadowBlur = 6;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  });
 
   // ---------- MENÜ EKRANI ----------
   if (gameState === 'menu') {
@@ -661,7 +576,7 @@ function draw() {
 
     ctx.font = '13px Share Tech Mono';
     ctx.fillStyle = Math.sin(frame * 0.1) > 0 ? '#ff8c00' : '#ffcc66';
-    ctx.fillText('Tekrar oynamak için [ ENTER ] tuşuna bas', W / 2, H / 2 + 70);
+    ctx.fillText('Tekrar oynamak için [ ENTER ] tuşuna bas', W / 2, H / 2 + 70)
   }
 }
 
