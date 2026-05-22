@@ -317,7 +317,7 @@ function drawRobot(x, y, w, h, ducking, legAnim, invincible) {
     ctx.fill();
   } else {
   }
-
+}
 // ---------- ENGELLER ----------
 function drawObstacle(ob) {
   ctx.save();
