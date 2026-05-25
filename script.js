@@ -399,7 +399,7 @@ function drawGround() {
 function update() {
   frame++;
 
-  speed = 5 + Math.floor(score / 500) * 0.8;
+  speed = 7 + Math.floor(score / 200) * 1.2;
   obstacleInterval = Math.max(40, 90 - Math.floor(score / 300) * 5);
 
   if (frame % 120 === 0) spawnPipe();
